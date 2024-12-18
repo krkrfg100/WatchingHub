@@ -1,0 +1,1009 @@
+{% extends "WatchingHub/layout.html" %}
+{% block head %}
+<style>
+      .body {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        margin: 10px;
+        padding: 10px;
+        direction: rtl;
+    }
+    .container{
+      position: relative;
+      width: 200px;
+      height: 300px;
+      display: inline-block;
+      margin-bottom: 20px;
+      
+      
+    }
+
+    .container:hover{
+      cursor: pointer;
+    }
+
+    .container img{
+      width: 108%;
+      height: 100%;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    
+    .overlay{
+      height: 90%;
+      width: 90%;
+      position: absolute;
+      transition: all .3s ease;
+      opacity: 0;
+      background-color: rgb(0, 0, 0);
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      padding: 10px 5px 5px 5px;
+
+    }
+    .overlay p, li, h4{
+      color: white;
+    }
+
+
+
+    .overlayFade{
+      width: 94%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.377);
+
+    }
+    .container:hover .overlayFade{
+      width: 93%;
+      height: 100%;
+      opacity: 1;
+      justify-content: center;
+    }
+    .add{
+      position: fixed;
+      top: 8%;        
+      left: 50%;        
+      transform: translateX(-50%); 
+      background-color: rgb(32, 26, 26);
+      border-radius: 50%;
+      color: white;
+      width: 30px;      
+      height: 30px;     
+      display: flex;    
+      align-items: center;
+      justify-content: center;
+      
+    }
+
+    #raring_and_Duration{
+
+      width: 90%;
+      justify-self: center;
+      padding-top: 10%;
+      justify-content: space-between;
+    }
+    #raring_and_Duration div{
+      display: flex;
+      justify-self: flex-end
+      
+    }
+    #raring_and_Duration img{
+      width: 20px;
+      height: 20px;
+      
+    }
+
+  body.no-scroll {
+      overflow: hidden;
+  }
+</style>
+
+<style>
+  /* This is css code for Drop-down form*/
+
+  .Drop-down-form{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms;
+    border: 1px solid black;
+    border-radius: 20px;
+    background-color: aliceblue;
+    z-index: 10;
+    width: 500px;
+    max-width: 80%;
+    height: 800px;
+    max-height: 80%;
+    overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+
+  }
+
+  .Drop-down-form.active{
+    transform: translate(-50%, -50%) scale(1);
+  
+  }
+  .form-header{
+    padding: 3%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .form-header .close-button{
+
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  .form-header .close-button:hover{
+    background-color: rgba(224, 133, 133, 0.781);
+    border-radius: 10%;
+  }
+
+  .form-body{
+    padding: 10px 15px;
+  }
+  #overlay,#overlay_for_show_info{
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.486);
+
+  }
+  #overlay.active, #overlay_for_show_info.active{
+    opacity: 1;
+    z-index:1;
+    pointer-events: all;
+  }
+</style>
+
+<style>
+  /* this is code css for show overlay */
+
+  #show_overlay{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms;
+    border: 5px solid rgb(150, 23, 23);
+    border-radius: 20px;
+    z-index: 10;
+    width: 800px;
+    max-width: 80%;
+    height: 800px;
+    max-height: 80%;
+    overflow-y: auto;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    color: white;
+    background-color: #000000c4;
+
+    
+  }
+  #show_overlay.active{
+    transform: translate(-50%, -50%) scale(1);
+
+  }
+
+  #show_overlay .info{
+    justify-self: center;
+    margin: 10%;
+  }
+
+  #show_overlay .info .show_img{
+    box-shadow: -2px 0px 20px 20px rgba(255, 255, 255, 0.548);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width: 200px;
+    height: 300px;
+    margin-bottom: 10%;
+  }
+
+  #show_overlay .info p{
+    font-weight: bold;
+  }
+
+  #show_overlay #review, #Duration, #Date_finished_watching, #Publication_year {
+    display: flex;
+    justify-content: center;
+    justify-self: center;
+    align-items: baseline;
+
+  }
+  
+  .show_overlay_close_button{
+    position: absolute;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: white;
+    z-index: 20;
+  }
+
+  .show_overlay_close_button:hover{
+
+    background-color: rgba(224, 133, 133, 0.781);
+    border-radius: 10%;
+    
+  }
+
+  #delete_show_overlay{
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); 
+    text-align: center;
+    width: 400px;
+    height: 150px;
+    background-color: aliceblue;
+    color: black;
+    border-radius: 20px;
+    padding : 3%;
+    opacity: 0;
+    transition:  0.3s ease,  0.3s ease;
+  }
+  #Delete_Show_Overlaye_background{
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.486);
+  }
+
+  #delete_show_overlay.active{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    z-index: 21;
+
+
+  }
+  #Delete_Show_Overlaye_background.active{
+    opacity: 1;
+    z-index:21;
+    pointer-events: all;
+  }
+
+</style>
+
+<script>
+  //this is code for Drop-down-form
+
+  
+  
+  
+  function getCookie(name){
+
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if(parts.length == 2) return parts.pop().split(';').shift();
+  }
+
+  window.addEventListener("DOMContentLoaded", (event)=>{
+      const OpenDropDownForm = document.querySelector('[data-open-target]')
+      const CloseDropDownForm = document.querySelector('[data-close-button]')
+      const overlay = document.getElementById("overlay")
+      const model = document.querySelector(OpenDropDownForm.dataset.openTarget)
+      const body = document.body;
+
+
+
+      if(OpenDropDownForm){
+      OpenDropDownForm.addEventListener('click', () => {
+        openForm(model)
+      })
+    }
+
+      if(CloseDropDownForm){
+      CloseDropDownForm.addEventListener('click', () => {
+        const model = CloseDropDownForm.closest('.Drop-down-form')
+        closeForm(model)
+      })
+    }
+
+      function openForm (model){
+        if(model == null) return
+        model.classList.add('active')
+        overlay.classList.add('active')
+        body.classList.add('no-scroll')
+
+        
+      }
+
+      function clearForm() {
+        document.getElementById("addShowForm").reset();
+    }
+
+      function closeForm (model){
+        if(model == null) return
+        model.classList.remove('active')
+        overlay.classList.remove('active')
+        body.classList.remove("no-scroll")
+        clearForm()
+        if(document.querySelector('#Save_Edit_button')){
+          document.querySelector('#Save_Edit_button').remove()
+        }
+      }
+      
+
+      function add_show(event){
+        event.preventDefault();
+        const formElement = document.getElementById('addShowForm');
+        const formData = new FormData(formElement)
+        const formObject = {};
+        formData.forEach((value, key) => {
+          if (formObject[key]) { 
+              if (Array.isArray(formObject[key])) {
+                  formObject[key].push(value);
+              } else {
+                  formObject[key] = [formObject[key], value];
+              }
+          } else {
+              formObject[key] = value;
+          }
+      });
+      
+      if (event.target.textContent === 'حفظ'){
+        closeForm(model)
+    }
+    
+      
+
+      // new Show object
+      const newContiner = document.createElement('div')
+      newContiner.classList.add("container")
+      const container = document.querySelector('.body');
+      newContiner.innerHTML = `
+
+      
+                <img src="${formObject.showimg}">
+                <div class="overlay overlayFade">
+                    <h4>${formObject.showtitle}</h4>
+                    <p></p>
+                    <div>
+                            <p>${formObject.ShowClassification}</p>
+                    </div>
+                </div>
+            
+            
+      `
+
+      //                         ------------------
+      clearForm()
+      container.insertBefore(newContiner, container.firstChild);
+      fetch(`addshow`, {
+
+        method: 'POST',
+        headers: {'Content-type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+        body: JSON.stringify({
+
+         
+          showtitle: formObject.showtitle,
+          showimg: formObject.showimg,
+          ShowClassification: formObject.ShowClassification,
+          ShowDiscription: formObject.ShowDiscription,
+          ShowRaring: formObject.ShowRaring,
+          PublicationYear: formObject.PublicationYear,
+          DateFinishedWatching: formObject.DateFinishedWatching,
+          Duration: formObject.Duration,
+
+        })
+
+        }
+      
+      )
+        
+     }
+      
+
+      
+      function close_show_info(){
+        let show_overlaye = document.getElementById('show_overlay')
+        let overlay = document.getElementById('overlay_for_show_info')
+        show_overlaye.classList.remove('active')
+        overlay.classList.remove('active')
+        body.classList.remove('no-scroll')
+
+      }
+
+
+
+      function edit_show(){
+        clearForm();
+        show_id = this.dataset.show_id;
+        
+        
+        let show_overlaye = document.getElementById('show_overlay');
+        let Drop_down_form = document.querySelector('.Drop-down-form');
+
+       
+        let originalButtonsHTML = Drop_down_form.querySelector('#Location-of-buttons').innerHTML;
+
+        
+        let SaveButton = Drop_down_form.getElementsByClassName('btn btn-success');
+        let Save_And_Add_Button = Drop_down_form.getElementsByClassName('btn btn-secondary');
+
+        
+        for (let button of SaveButton) {
+            button.remove();
+        }
+
+        for (let button of Save_And_Add_Button) {
+            button.remove();
+        }
+
+        
+        let newEditButton = document.createElement('button');
+        newEditButton.textContent = 'حفظ التعديل';
+        newEditButton.className = 'btn btn-warning';
+        newEditButton.id = 'Save_Edit_button'
+        Drop_down_form.querySelector('#Location-of-buttons').appendChild(newEditButton);
+
+        
+        function resetButtons() {
+            Drop_down_form.querySelector('#Location-of-buttons').innerHTML = originalButtonsHTML;
+        }
+                
+      
+      
+
+        // Add information to drop-down-form entries
+        // show_name
+        let showTitle = show_overlaye.querySelector('h4');
+        if (showTitle) {
+            Drop_down_form.querySelector('input[name="showtitle"]').value = showTitle.innerHTML;
+        }
+    
+        // img
+        let showImg = show_overlaye.querySelector('img');
+        if (showImg) {
+            Drop_down_form.querySelector('input[name="showimg"]').value = showImg.src;
+        }
+    
+        // review
+        let review = show_overlaye.querySelector('#review');
+        if (review) {
+            let reviewText = review.querySelector('p');
+            if (reviewText) {
+                Drop_down_form.querySelector('input[name="ShowRaring"]').value = reviewText.innerHTML;
+            }
+        }
+    
+        // Duration
+        let Duration = show_overlaye.querySelector('#Duration');
+        if (Duration) {
+            let durationText = Duration.querySelector('p');
+            if (durationText) {
+                Drop_down_form.querySelector('input[name="Duration"]').value = durationText.innerHTML;
+            }
+        }
+    
+        // Publication year
+        let Publication_year = show_overlaye.querySelector('#Publication_year');
+        if (Publication_year) {
+            let publicationText = Publication_year.querySelector('p');
+            if (publicationText) {
+                Drop_down_form.querySelector('input[name="PublicationYear"]').value = publicationText.innerHTML;
+            }
+        }
+    
+        // classification
+        let container = document.querySelector(`.container[data-show_id="${show_id}"]`);
+        if (container) {
+            let classificationElement = container.querySelector("#classification");
+            if (classificationElement) {
+                let classification = classificationElement.innerHTML.trim().split(/\s+/);
+                let select_option = Drop_down_form.querySelector('select[name="ShowClassification"]');
+                classification.forEach(data => {
+                    let option = Array.from(select_option.options).find(option => option.value === data);
+                    if (option) {
+                        option.selected = true;
+                    }
+                });
+            }
+        }
+        // description
+        let descriptionElement = show_overlaye.querySelector('#discription');
+        if (descriptionElement) {
+            Drop_down_form.querySelector('textarea[name="ShowDiscription"]').value = descriptionElement.innerHTML;
+        }
+    
+        // Date finished watching
+        fetch(`DateFinishedWatching/${show_id}`, {
+            method: 'GET',
+            headers: { 'Content-type': 'application/json' },
+        })
+        .then(response => {
+            if (!response.ok) {
+                Error("ERROR");
+            }
+            return response.json();
+        })
+        .then(data => {
+            Drop_down_form.querySelector('input[name="DateFinishedWatching"]').value = data.DateFinishedWatching.replace("Z", "").slice(0, 16);
+        })
+
+        
+        // Display modal
+        if (model == null) return;
+        model.classList.add('active');
+        overlay.classList.add('active');
+        body.classList.add('no-scroll');
+        
+        // Set settings before sending
+        let formData = Drop_down_form.querySelector('#addShowForm');
+        const origin_form_route_submit = formData.action
+        formData.action = `/edit_show/${show_id}`;
+       
+        
+        
+
+        newEditButton.addEventListener('submit',() => {
+          const formDataObject = new FormData(formData);
+
+
+          const params = new URLSearchParams();
+          formDataObject.forEach((value, key) => {
+            params.append(key, value);
+          });
+
+          fetch(`edit_show/${show_id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(params.toString())
+          })
+          .then(result => {
+            if (!result.ok) {
+              throw new Error("Something went wrong");
+            }
+            return result.json();
+          })
+          .then(data => {
+            resetButtons();
+            if (model == null) return;
+            model.classList.remove('active');
+            overlay.classList.remove('active');
+            body.classList.remove("no-scroll");
+            formData.action = origin_form_route_submit;
+            clearForm();
+            if (data.message) {
+              alert(data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error processing your request.');
+          });
+
+
+      })
+      }
+
+      function openDeleteShowOverlaye(){
+          show_id = this.dataset.show_id
+          const delete_show_overlay =  document.getElementById('delete_show_overlay')
+          const Delete_Show_Overlaye_background = document.getElementById('Delete_Show_Overlaye_background')
+          delete_show_overlay.querySelector('#yas_button').dataset.show_id = show_id
+          show_title = document.querySelector(`.container[data-show_id="${show_id}"]`).querySelector('h4').innerHTML
+          delete_show_overlay.querySelector('#showTitle_span').innerHTML = show_title
+          delete_show_overlay.classList.add('active')
+          Delete_Show_Overlaye_background.classList.add('active')
+      }
+
+      function Delete_Show_Overlaye_no_button(){
+        const delete_show_overlay =  document.getElementById('delete_show_overlay')
+        const Delete_Show_Overlaye_background = document.getElementById('Delete_Show_Overlaye_background')
+        delete_show_overlay.classList.remove('active')
+        Delete_Show_Overlaye_background.classList.remove('active')
+      }
+
+
+      function Delete_Show_yas_button(){
+        show_id = this.dataset.show_id
+        document.querySelector(`.container[data-show_id="${show_id}"]`).remove()
+        close_show_info()
+        Delete_Show_Overlaye_no_button()
+
+          fetch(`delete_show`, {
+
+            method: 'POST',
+            headers: {'Content-type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+            body: JSON.stringify({'show_id':show_id})
+    
+            }
+          
+          )
+            
+        }
+
+    
+
+
+     document.getElementById('addShowForm').querySelector('#save_button').addEventListener('click',add_show)
+     document.getElementById('addShowForm').querySelector('#save_and_add_button').addEventListener('click',add_show)
+     document.querySelectorAll('.container').forEach(element => {
+      element.addEventListener('click', () =>{
+        let overlay = document.getElementById('overlay_for_show_info')
+        let show_overlaye = document.getElementById('show_overlay')
+        let show_id = element.dataset.show_id
+        overlay.classList.add('active')
+        show_overlaye.classList.add('active')
+        body.classList.add('no-scroll')
+
+        const originalValues = {
+          showName: show_overlaye.querySelector('h4').innerHTML,
+          showImg: show_overlaye.querySelector('img').src,
+          reviewText: show_overlaye.querySelector('#review p').innerHTML,
+          reviewImg: show_overlaye.querySelector('#review img').src,
+          durationText: show_overlaye.querySelector('#Duration p').innerHTML,
+          durationImg: show_overlaye.querySelector('#Duration img').src,
+          dateFinishedText: show_overlaye.querySelector('#Date_finished_watching p').innerHTML,
+          dateFinishedImg: show_overlaye.querySelector('#Date_finished_watching img').src,
+          publicationYearText: show_overlaye.querySelector('#Publication_year p').innerHTML,
+          publicationYearImg: show_overlaye.querySelector('#Publication_year img').src,
+          showDescription: show_overlaye.querySelector('#discription').innerHTML
+        };
+
+        function resetToOriginalValues() {
+          show_overlaye.querySelector('h4').innerHTML = originalValues.showName;
+          show_overlaye.querySelector('img').src = originalValues.showImg;
+        
+          let review = show_overlaye.querySelector('#review');
+          review.querySelector('p').innerHTML = originalValues.reviewText;
+          review.querySelector('img').src = originalValues.reviewImg;
+        
+          let Duration = show_overlaye.querySelector('#Duration');
+          Duration.querySelector('p').innerHTML = originalValues.durationText;
+          Duration.querySelector('img').src = originalValues.durationImg;
+        
+          let Date_finished_watching = show_overlaye.querySelector('#Date_finished_watching');
+          Date_finished_watching.querySelector('p').innerHTML = originalValues.dateFinishedText;
+          Date_finished_watching.querySelector('img').src = originalValues.dateFinishedImg;
+        
+          let Publication_year = show_overlaye.querySelector('#Publication_year');
+          Publication_year.querySelector('p').innerHTML = originalValues.publicationYearText;
+          Publication_year.querySelector('img').src = originalValues.publicationYearImg;
+        
+          show_overlaye.querySelector('#discription').innerHTML = originalValues.showDescription;
+        }
+
+        resetToOriginalValues()
+        // load information
+              
+          //show_name
+          if (element.querySelector('h4')) {
+            show_overlaye.querySelector('h4').innerHTML = `${element.querySelector('h4').innerHTML}`;
+          }
+          // img
+          if (element.querySelector('img')) {
+            show_overlaye.querySelector('img').src = `${element.querySelector('img').src}`;
+          }
+          // review
+          let review = show_overlaye.querySelector('#review');
+          if (review && element.querySelector('#review_p') && element.querySelector('#review_img')) {
+            review.querySelector('p').innerHTML = element.querySelector('#review_p').innerHTML;
+            review.querySelector('img').src = element.querySelector('#review_img').src;
+          }
+          // Duration
+          let Duration = show_overlaye.querySelector('#Duration');
+          if (Duration && element.querySelector('.Duration_p') && element.querySelector('.Duration_img')) {
+            Duration.querySelector('p').innerHTML = element.querySelector('.Duration_p').innerHTML;
+            Duration.querySelector('img').src = element.querySelector('.Duration_img').src;
+          }
+          //Date finished watching
+          let Date_finished_watching = show_overlaye.querySelector('#Date_finished_watching');
+          if (Date_finished_watching && element.querySelector('.Date_finished_watching_p') && element.querySelector('.Date_finished_watching_img')) {
+            Date_finished_watching.querySelector('p').innerHTML = element.querySelector('.Date_finished_watching_p').innerHTML;
+            Date_finished_watching.querySelector('img').src = element.querySelector('.Date_finished_watching_img').src;
+          }
+          //Publication year
+          let Publication_year = show_overlaye.querySelector('#Publication_year');
+          if (Publication_year && element.querySelector('.Publication_year_p') && element.querySelector('.Publication_year_img')) {
+            Publication_year.querySelector('p').innerHTML = element.querySelector('.Publication_year_p').innerHTML;
+            Publication_year.querySelector('img').src = element.querySelector('.Publication_year_img').src;
+          }
+          // add_data_show_id to button
+          let edit_button = show_overlaye.querySelector('#edit_show');
+          if (edit_button) {
+            edit_button.dataset.show_id = show_id;
+          }
+          let delete_button = show_overlaye.querySelector('#delete_show');
+          if (delete_button) {
+            delete_button.dataset.show_id = show_id;
+          }
+
+          //discription
+          if (show_overlaye.querySelector('#discription')) {
+            fetch(`show_info/${show_id}`, {
+                method: 'GET',
+                headers: {'Content-type': 'application/json'},
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("ERROR"); 
+                }
+                return response.json(); 
+            })
+            .then(data => {
+                show_overlaye.querySelector('#discription').innerHTML = `${data.Show_discription}`;
+            });
+          }
+
+                    
+
+      })
+     })
+     document.querySelector('.show_overlay_close_button').addEventListener('click',close_show_info)
+    document.querySelector('#edit_show').addEventListener('click',edit_show)
+    document.querySelector('#delete_show').addEventListener('click',openDeleteShowOverlaye)
+    document.querySelector('#no_button').addEventListener('click',Delete_Show_Overlaye_no_button)
+    document.querySelector('#yas_button').addEventListener('click',Delete_Show_yas_button)
+    }
+    )
+</script>
+
+<script>
+  // this script for add a new Classification
+
+  window.addEventListener("DOMContentLoaded",() => {
+
+    document.getElementById('add_new_Classification').addEventListener('click', (event) => {
+      document.getElementById('add_new_Classification_overlay').classList.add('active')
+      document.getElementById('add_new_Classification_continer').classList.add('active')
+    })
+    document.getElementById('close_button_add_new_Classification').addEventListener('click', (event) => {
+      document.getElementById('add_new_Classification_overlay').classList.remove('active')
+      document.getElementById('add_new_Classification_continer').classList.remove('active')
+    })
+  })
+</script>
+<style>
+  /* this css code for add a new Classification */
+  #add_new_Classification_continer
+  {
+    position: fixed;
+    top: 35%;
+    left: 45%;
+    text-align-last: center;
+    transition: 200ms;
+    border: 3px solid rgb(150, 23, 23);
+    border-radius: 20px;
+    color: white;
+    background-color: #000000c4;
+    opacity: 0;
+    padding: 15px;
+    z-index: -1;
+  }
+
+  #add_new_Classification_continer.active
+  {
+    opacity: 1;
+    z-index: 2;
+    transform:  scale(1);
+  }
+
+  #add_new_Classification_overlay{
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.486);
+    z-index: -1;
+
+
+  }
+  #add_new_Classification_overlay.active{
+    opacity: 1;
+    z-index:1;
+    }
+
+    #add_new_Classification{
+      cursor: pointer;
+    }
+
+</style>
+{% endblock %}
+
+{% block html %}<div id="overlay"></div><div id="overlay_for_show_info"></div><div id="add_new_Classification_overlay"></div>{% endblock %}
+
+    {% block navbar%}
+    <li class="nav-item">
+      <a class="nav-link" id="add_new_Classification">إضافة تصنيف جديد</a>
+    </li>
+    {% endblock %}
+
+
+{% block body %}
+
+<!-- section of add a new Classification -->
+
+    <div id="add_new_Classification_continer" >
+      <form action="/add_Classification" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" name="Classification_name" class="form-control" placeholder=" إسم التصنيف" required>
+        </div>
+        <button type="button" class="btn btn-danger" id="close_button_add_new_Classification"> إلغاء </button>
+        <button type="submit" class="btn btn-dark"> أضِف </button>
+      </form>
+    </div>
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+<!-- section of show_overlay --> 
+  
+<div id="show_overlay">
+  <div id="Delete_Show_Overlaye_background"></div>
+  <button class="show_overlay_close_button">&times;</button>
+  <div class="info">
+    
+    <div class="row">
+
+      <!------------------------------------------------------------------->
+      <div>
+        <h4></h4>
+    <img class="show_img" >
+      </div>
+      <!------------------------------------------------------------------->
+      <div class="col">
+        <p id="discription"></p>
+
+      <div style="display: flex; justify-content: space-evenly;">
+        <div id="review" >
+          <img> <p></p>
+        </div>
+
+        <div id="Duration">
+          <img> <p></p>
+        </div>
+
+      </div>
+
+      <div style="display: flex;justify-content: center;flex-direction: column;">
+        <div id="Publication_year" >
+          <img> <p></p>
+        </div>
+
+        <div id="Date_finished_watching">
+          <img> <p></p>
+        </div>
+
+      </div>
+
+    </div>
+      <!------------------------------------------------------------------->
+
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-warning" id="edit_show" >تعديل</button>
+        <button class="btn btn-danger" id="delete_show" >حذف</button>
+      </div>    
+    </div>
+  </div>
+  
+  <div id="delete_show_overlay">
+    <p> <span> هل انت متأكد من انك تريد حذف </span> <span id="showTitle_span" style="background-color: gold;"></span></p>
+    <button type="button" id="no_button" class="btn btn-success">لا</button>
+    <button type="button" id="yas_button" class="btn btn-danger">نعم</button>
+</div>
+
+</div>
+
+
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+
+<!-- section of Drop-down-form -->
+<button data-open-target="#form" class="add">+</button>
+<div class="Drop-down-form" id="form">
+  <div class="form-header">
+    <p> نموذج الإضافة </p>
+    <button data-close-button class="close-button">&times;</button>
+  </div>
+ <hr>
+  <div class="form-body">
+    <form id="addShowForm" action="{% url 'addshow' %}" class="was-validated" method="POST">
+      {% csrf_token %}
+      <h3> حقول مطلوبة</h3>
+      <label> عنوان العرض</label>
+      <input type="text" class="form-control" name="showtitle" required>
+      <label> رابط صورة للعرض</label>
+      <input type="url" class="form-control" name="showimg" required>
+      <label> تصنيف العرض</label>
+      <select name="ShowClassification" class="form-control" multiple required>
+        {% for option in Classification %}
+        <option value="{{option}}">{{option}}</option>
+        {%endfor%}
+
+      </select>
+      <hr>
+      <h3> حقول اختيارية</h3>
+      <label> وصف العرض</label>
+      <textarea style="resize: none;" class="form-control"  cols="1" rows="3" name="ShowDiscription"></textarea>
+      <label> تقييم العرض من 1 الى 10</label>
+      <input type="number" max="10" min="1" class="form-control" name="ShowRaring" >
+      <label> تاريخ الانتهاء من العرض</label>
+      <input type="datetime-local" class="form-control" name="DateFinishedWatching">
+      <label>سنة النشر</label>
+      <input type="number" min="1800" max="2200" class="form-control" name="PublicationYear">
+      <label> ( بالساعة ) مدة العرض </label>
+      <input type="datetime"  class="form-control" name="Duration" placeholder=" مثال 1:50 ">
+      <div id="Location-of-buttons" style="padding: 2%; margin-top: 15px">
+      <button id="save_button" onsubmit="add_show(this)" class="btn btn-success">حفظ</button>
+      <button onsubmit="add_show(this)" id="save_and_add_button" class="btn btn-secondary">حفظ و إضافة</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+<!-- section of body -->
+<div class="body" id="body">
+    {% if Shows|length < 1 %}
+    {% else %}
+        {% for show in Shows %}
+            <div class="container" data-show_id="{{show.id}}">
+                <img src="{{ show.Show_img }}">
+                <div class="overlay overlayFade">
+                    <h4 >{{ show.Show_title }}</h4>
+                    <div>
+                      <p id="classification">
+                        {% for classification in show.Show_Classification.all %}
+                            {{ classification.Classification }}
+                        {% endfor %}
+                      </p>
+                    </div>
+
+                    <div class="row row-cols-2 " id="raring_and_Duration">
+                      {% if show.duration%}
+                      <div><p class="Duration_p">{{show.duration|time:"H:i"}}</p> <img class="Duration_img" src="/static/WatchingHub/icons/timer.ico"></div>
+                      {% endif %}
+
+                      {% if show.Show_raring %}
+                      <div ><p id="review_p">{{show.Show_raring}}</p> <img id="review_img" src="/static/WatchingHub/icons/star.ico"></div>
+                      {% endif %}
+                    </div>
+
+                    <div class="col col-cols-2 " id="raring_and_Duration">
+                      {% if show.Publication_year %}
+                      <div ><p class="Publication_year_p">{{show.Publication_year}}</p> <img class="Publication_year_img" src="/static/WatchingHub/icons/publication.ico"></div>
+                      {% endif %}
+                      
+                      {% if show.Date_finished_watching%}
+                      <div><p class="Date_finished_watching_p">{{show.Date_finished_watching|date:"Y/m/d h:i "}}{% if show.Date_finished_watching|date:"A" == "AM" %} صباحاً {% else %} مساءً {% endif %}</p> <img class="Date_finished_watching_img" src="/static/WatchingHub/icons/complete.ico"></div>
+                      {% endif %}
+                    </div>
+                </div>
+              </a>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+<!--------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+
+{% endblock %}

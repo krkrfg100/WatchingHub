@@ -1,0 +1,72 @@
+{% extends "WatchingHub/layout.html" %}
+
+
+
+
+{% block head %}
+
+ <style>
+  body{
+    text-align: center;
+
+  }
+
+  h1, p {
+    color: white;
+  }
+
+  .form{
+    width: 30%;
+    height: 30%;
+    border: 2px solid plum;
+    border-radius: 5px;
+    padding: 1%;
+    text-align: center;
+    margin: auto;
+    margin-top: 5%;
+  }
+  .form form input{
+
+    margin-top:  20px;
+    text-align: right;
+    background-color: #373c3c;
+    border:  none;
+    color: white;
+
+  }
+  .form form input:focus {
+    background-color: #373c3c;
+    color: white;
+    
+    
+  }
+
+ </style>
+{% endblock %}
+
+ {% block body%}
+ 
+ {% if message %}
+ <div class="alert alert-danger">
+    <strong>حدث خطأ!!</strong> {{message}}.
+  </div>
+ {%endif%}
+
+<h1> إنشاء حساب  </h1>
+
+<div class="form">
+<form action="{% url 'register' %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <input type="usernaame" class="form-control" placeholder="أسم المستخدم" name="username">
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="كلمة المرور" name="password">
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" placeholder="تأكيد كلمة المرور" name="confirmation">
+      </div>
+    <button type="submit" class="btn btn-primary">أرسال</button>
+  </form>
+</div>
+ {% endblock%}

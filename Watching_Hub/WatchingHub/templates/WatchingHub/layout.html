@@ -1,0 +1,166 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ar">
+    
+    {% block html %}{% endblock %}
+    <head>
+        <title>{% block title %}WatchingHub{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        
+
+        <!-- javaScript bootstrap -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        {% block head %}
+        {% endblock %}
+
+        <style>
+          body{
+
+            background-color: #242424 ;
+
+          }
+          body::-webkit-scrollbar {
+            width: 0; 
+        }
+          #nav{
+
+            width: 70%;
+            margin-top: 1%;
+            justify-content: center;
+            left: 17%;
+            border-radius: 7px;
+            box-shadow: 2px 2px 41px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2%;
+
+          }
+          .active-sort {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+          }
+          .dropdown-menu button:hover{
+            background-color: #469fff;
+          }
+        </style>
+    </head>
+    <body>
+
+      <nav id="nav" class="navbar navbar-expand-md bg-dark navbar-dark">
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">WatchingHub</a>
+      
+        <!-- Toggler/collapsible Button -->
+        <button 
+          class="navbar-toggler" 
+          type="button" 
+          data-toggle="collapse" 
+          data-target="#collapsibleNavbar" 
+          aria-controls="collapsibleNavbar" 
+          aria-expanded="false" 
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+      
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                ترتيب حسب
+              </a>
+              <div class="dropdown-menu">
+                <form method="POST" action="{% url 'shorted_by' %}">
+                  {% csrf_token %}
+                  <button class="dropdown-item {% if user.settings.Sort_Shows_By == 'Random' %}active-sort{% endif %}" type="submit" name="sort_by" value="Random">عشوائي</button>
+                  <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Show_title' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Show_title">العنوان
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Date_added_latest' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Date_added_latest">تاريخ الإضافة (الأحدث أولاً)
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Date_added_oldest' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Date_added_oldest">تاريخ الإضافة (الأقدم أولاً)
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Newest_in_release' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Newest_in_release">الأحدث في الإصدار
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Oldest_in_release' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Oldest_in_release">الأقدم في الإصدار
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Highest_rating' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Highest_rating">أعلى تقييم
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Lowest_rating' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Lowest_rating">أقل تقييم
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Date_finished_watching_latest' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Date_finished_watching_latest">تاريخ الانتهاء من المشاهدة (الأحدث أولاً)
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Date_finished_watching_oldest' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Date_finished_watching_oldest">تاريخ الانتهاء من المشاهدة (الأقدم أولاً)
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Longest_duration' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Longest_duration">الأطول مدة
+                      </button>
+                      <button 
+                        class="dropdown-item {% if user.settings.Sort_Shows_By == 'Shortest_duration' %}active-sort{% endif %}" 
+                        type="submit" name="sort_by" value="Shortest_duration">الأقصر مدة
+                      </button>
+                </form>
+              </div>
+            </li>
+      
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                فرز حسب التصنيف
+              </a>
+              <div class="dropdown-menu">
+                <form method="POST" action="{% url 'edit_filter' %}">
+                  {% csrf_token %}
+                  <button class="dropdown-item" type="submit" name="filter_by_classification" value="">الكل</button>
+                  {% for classification in Classification %}
+                  <button class="dropdown-item" type="submit" name="filter_by_classification" value="{{ classification.id }}">{{ classification.Classification }}</button>
+                  {% endfor %}
+                </form>
+              </div>
+            </li>
+      
+            {% block navbar %}
+            {% endblock %}
+      
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">
+                logout
+              </a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" id="newClassification" href="{% url 'register' %}">أنشاء حساب</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">تسجيل دخول</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
